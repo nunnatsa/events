@@ -16,7 +16,7 @@ GET http://{{host}}:8080
         client.assert(response.status === 200, "Response status is not 200");
         var type = response.contentType.mimeType;
         client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
-        client.assert(response.body === 'Counter: 0\n', "Response body is not 'Counter: 0' but '" + response.body + "'");
+        client.assert(response.body === 'Data: 0\n', "Response body is not 'Data: 0' but '" + response.body + "'");
     });
 %}
 
@@ -104,7 +104,7 @@ GET http://{{host}}:8080
         client.assert(response.status === 200, "Response status is not 200");
         var type = response.contentType.mimeType;
         client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
-        client.assert(response.body === 'Counter: 40\n', "Response body is not 'Counter: 40' but '" + response.body + "'");
+        client.assert(response.body === 'Data: 40\n', "Response body is not 'Data: 40' but '" + response.body + "'");
     });
 %}
 
@@ -131,7 +131,7 @@ GET http://{{host}}:8080
         client.assert(response.status === 200, "Response status is not 200");
         var type = response.contentType.mimeType;
         client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
-        client.assert(response.body === 'Counter: 50\n', "Response body is not 'Counter: 50' but '" + response.body + "'");
+        client.assert(response.body === 'Data: 50\n', "Response body is not 'Data: 50' but '" + response.body + "'");
     });
 %}
 
@@ -153,6 +153,6 @@ GET http://{{host}}:8080
         client.assert(response.status === 200, "Response status is not 200");
         var type = response.contentType.mimeType;
         client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
-        client.assert(response.body === 'Counter: 0\n', "Response body is not 'Counter: 0' but '" + response.body + "'");
+        client.assert(response.body === 'Data: 0\n', "Response body is not 'Data: 0' but '" + response.body + "'");
     });
 %}

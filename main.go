@@ -36,7 +36,7 @@ func (h *eventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// HTTP handler for the update counter request
+// HTTP handler for the update data request
 func (h *eventHandler) updateDataRequest(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -54,12 +54,12 @@ func (h *eventHandler) updateDataRequest(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-// HTTP handler for the get counter request
+// HTTP handler for the get data request
 func (h eventHandler) getDataRequest(w http.ResponseWriter, _ *http.Request) {
-	_, _ = fmt.Fprintf(w, "Counter: %d\n", h.getData())
+	_, _ = fmt.Fprintf(w, "Data: %d\n", h.getData())
 }
 
-// http handler for the reset counter request
+// http handler for the reset data request
 func (h eventHandler) resetDataRequest(w http.ResponseWriter, _ *http.Request) {
 	h.reset()
 	w.WriteHeader(http.StatusNoContent)
@@ -113,7 +113,7 @@ func (h eventHandler) getData() uint64 {
 	return res
 }
 
-// reset counter wrapper
+// reset data wrapper
 func (h *eventHandler) reset() {
 	h.resetEvent <- struct{}{}
 }
