@@ -1,5 +1,5 @@
 ###
-POST http://localhost:8080/reset
+POST http://{{host}}:8080/reset
 
 > {%
     client.test("Request executed successfully", function() {
@@ -9,17 +9,19 @@ POST http://localhost:8080/reset
 
 ###
 
-GET http://localhost:8080
+GET http://{{host}}:8080
 
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 200, "Response status is not 200");
+        var type = response.contentType.mimeType;
+        client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
         client.assert(response.body === 'Counter: 0\n', "Response body is not 'Counter: 0' but '" + response.body + "'");
     });
 %}
 
 ###
-PUT http://localhost:8080
+PUT http://{{host}}:8080
 Content-Type: text/plain
 
 5
@@ -27,12 +29,14 @@ Content-Type: text/plain
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body === 'Added 5', "Response body is not 'Added 5' but '" + response.body + "'");
+        var type = response.contentType.mimeType;
+        client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
+        client.assert(response.body === 'Added 5\n', "Response body is not 'Added 5' but '" + response.body + "'");
     });
 %}
 
 ###
-PUT http://localhost:8080
+PUT http://{{host}}:8080
 Content-Type: text/plain
 
 aaa
@@ -40,10 +44,13 @@ aaa
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 400, "Response status is not 400");
+        var type = response.contentType.mimeType;
+        client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
+        client.assert(response.body === 'wrong input\n', "Response body is not 'wrong input' but '" + response.body + "'");
     });
 %}
 ###
-PUT http://localhost:8080
+PUT http://{{host}}:8080
 Content-Type: text/plain
 
 5aaa
@@ -52,11 +59,14 @@ Content-Type: text/plain
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 400, "Response status is not 400");
+        var type = response.contentType.mimeType;
+        client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
+        client.assert(response.body === 'wrong input\n', "Response body is not 'wrong input' but '" + response.body + "'");
     });
 %}
 
 ###
-PUT http://localhost:8080
+PUT http://{{host}}:8080
 Content-Type: text/plain
 
 34
@@ -64,12 +74,14 @@ Content-Type: text/plain
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body === 'Added 34', "Response body is not 'Added 34' but '" + response.body + "'");
+        var type = response.contentType.mimeType;
+        client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
+        client.assert(response.body === 'Added 34\n', "Response body is not 'Added 34' but '" + response.body + "'");
     });
 %}
 
 ###
-PUT http://localhost:8080
+PUT http://{{host}}:8080
 Content-Type: text/plain
 
 1
@@ -77,23 +89,27 @@ Content-Type: text/plain
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body === 'Added 1', "Response body is not 'Added 1' but '" + response.body + "'");
+        var type = response.contentType.mimeType;
+        client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
+        client.assert(response.body === 'Added 1\n', "Response body is not 'Added 1' but '" + response.body + "'");
     });
 %}
 
 ###
 
-GET http://localhost:8080
+GET http://{{host}}:8080
 
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 200, "Response status is not 200");
+        var type = response.contentType.mimeType;
+        client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
         client.assert(response.body === 'Counter: 40\n', "Response body is not 'Counter: 40' but '" + response.body + "'");
     });
 %}
 
 ###
-PUT http://localhost:8080
+PUT http://{{host}}:8080
 Content-Type: text/plain
 
 10
@@ -101,22 +117,26 @@ Content-Type: text/plain
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body === 'Added 10', "Response body is not 'Added 10' but '" + response.body + "'");
+        var type = response.contentType.mimeType;
+        client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
+        client.assert(response.body === 'Added 10\n', "Response body is not 'Added 10' but '" + response.body + "'");
     });
 %}
 
 ###
-GET http://localhost:8080
+GET http://{{host}}:8080
 
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 200, "Response status is not 200");
+        var type = response.contentType.mimeType;
+        client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
         client.assert(response.body === 'Counter: 50\n', "Response body is not 'Counter: 50' but '" + response.body + "'");
     });
 %}
 
 ###
-POST http://localhost:8080/reset
+POST http://{{host}}:8080/reset
 
 > {%
     client.test("Request executed successfully", function() {
@@ -126,11 +146,13 @@ POST http://localhost:8080/reset
 
 ###
 
-GET http://localhost:8080
+GET http://{{host}}:8080
 
 > {%
     client.test("Request executed successfully", function() {
         client.assert(response.status === 200, "Response status is not 200");
+        var type = response.contentType.mimeType;
+        client.assert(type === "text/plain", "Expected 'text/plain' but received '" + type + "'");
         client.assert(response.body === 'Counter: 0\n', "Response body is not 'Counter: 0' but '" + response.body + "'");
     });
 %}

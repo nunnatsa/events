@@ -41,26 +41,26 @@ func (h *eventHandler) updateDataRequest(w http.ResponseWriter, r *http.Request)
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, "can't parse input")
+		_, _ = fmt.Fprintln(w, "can't parse input")
 	} else {
 		addition, err := strconv.ParseUint(string(body), 10, 64)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintln(w, "wrong input")
+			_, _ = fmt.Fprintln(w, "wrong input")
 		} else {
 			h.addToData(addition)
-			fmt.Fprintf(w, "Added %d", addition)
+			_, _ = fmt.Fprintf(w, "Added %d\n", addition)
 		}
 	}
 }
 
 // HTTP handler for the get counter request
-func (h eventHandler) getDataRequest(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Counter: %d\n", h.getData())
+func (h eventHandler) getDataRequest(w http.ResponseWriter, _ *http.Request) {
+	_, _ = fmt.Fprintf(w, "Counter: %d\n", h.getData())
 }
 
 // http handler for the reset counter request
-func (h eventHandler) resetDataRequest(w http.ResponseWriter, r *http.Request) {
+func (h eventHandler) resetDataRequest(w http.ResponseWriter, _ *http.Request) {
 	h.reset()
 	w.WriteHeader(http.StatusNoContent)
 }
@@ -70,8 +70,8 @@ func newEventHandler() *eventHandler {
 	h := &eventHandler{
 		data:          0,
 		additionEvent: make(chan uint64, 1),
-		getEvent:      make(chan chan uint64),
-		resetEvent:    make(chan struct{}),
+		getEvent:      make(chan chan uint64, 1),
+		resetEvent:    make(chan struct{}, 1),
 	}
 
 	go h.handle()
