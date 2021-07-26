@@ -17,27 +17,38 @@ type eventHandler struct {
 func (h *eventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
 	if r.Method == http.MethodGet {
-		c := h.getCounter()
-		fmt.Fprintf(w, "Counter: %d\n", c)
+		h.getCounterRequest(w, r)
 	} else if r.Method == http.MethodPut {
-		body, err := io.ReadAll(r.Body)
+		h.updateCounterRequest(w, r)
+	} else if r.Method == http.MethodPost && r.URL.Path == "/reset" {
+		h.resetCounterRequest(w, r)
+	}
+}
+
+func (h *eventHandler) updateCounterRequest(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintln(w, "can't parse input")
+	} else {
+		addition, err := strconv.ParseUint(string(body), 10, 64)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintln(w, "can't parse input")
+			fmt.Fprintln(w, "wrong input")
 		} else {
-			addition, err := strconv.ParseUint(string(body), 10, 64)
-			if err != nil {
-				w.WriteHeader(http.StatusBadRequest)
-				fmt.Fprintln(w, "wrong input")
-			} else {
-				h.triggerCounterEvent(addition)
-				fmt.Fprintf(w, "Added %d", addition)
-			}
+			h.triggerCounterEvent(addition)
+			fmt.Fprintf(w, "Added %d", addition)
 		}
-	} else if r.Method == http.MethodPost && r.URL.Path == "/reset" {
-		h.reset()
-		w.WriteHeader(http.StatusNoContent)
 	}
+}
+
+func (h eventHandler) getCounterRequest(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Counter: %d\n", h.getCounter())
+}
+
+func (h eventHandler) resetCounterRequest(w http.ResponseWriter, r *http.Request) {
+	h.reset()
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func newEventHandler() *eventHandler {
