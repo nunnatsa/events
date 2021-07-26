@@ -7,25 +7,37 @@ import (
 	"strconv"
 )
 
+// the event handler type
 type eventHandler struct {
-	counter         uint64
-	countEvent      chan uint64
-	getCounterEvent chan chan uint64
-	resetEvent      chan struct{}
+	// data is the server data
+	data uint64
+
+	// channel to get addition event. The content of the event is a uint64
+	// value to be added to the data
+	additionEvent chan uint64
+
+	// channel of uint64 channels, to receive the current value of data. The
+	// content of the event is a callback channel to return the value of data.
+	getEvent chan chan uint64
+
+	// channel to receive reset events. the content is ignored
+	resetEvent chan struct{}
 }
 
+// main HTTP handler
 func (h *eventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
 	if r.Method == http.MethodGet {
-		h.getCounterRequest(w, r)
+		h.getDataRequest(w, r)
 	} else if r.Method == http.MethodPut {
-		h.updateCounterRequest(w, r)
+		h.updateDataRequest(w, r)
 	} else if r.Method == http.MethodPost && r.URL.Path == "/reset" {
-		h.resetCounterRequest(w, r)
+		h.resetDataRequest(w, r)
 	}
 }
 
-func (h *eventHandler) updateCounterRequest(w http.ResponseWriter, r *http.Request) {
+// HTTP handler for the update counter request
+func (h *eventHandler) updateDataRequest(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -36,27 +48,30 @@ func (h *eventHandler) updateCounterRequest(w http.ResponseWriter, r *http.Reque
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintln(w, "wrong input")
 		} else {
-			h.triggerCounterEvent(addition)
+			h.addToData(addition)
 			fmt.Fprintf(w, "Added %d", addition)
 		}
 	}
 }
 
-func (h eventHandler) getCounterRequest(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Counter: %d\n", h.getCounter())
+// HTTP handler for the get counter request
+func (h eventHandler) getDataRequest(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Counter: %d\n", h.getData())
 }
 
-func (h eventHandler) resetCounterRequest(w http.ResponseWriter, r *http.Request) {
+// http handler for the reset counter request
+func (h eventHandler) resetDataRequest(w http.ResponseWriter, r *http.Request) {
 	h.reset()
 	w.WriteHeader(http.StatusNoContent)
 }
 
+// create new event handler and start the event handling loop in a new go-routine
 func newEventHandler() *eventHandler {
 	h := &eventHandler{
-		counter:         0,
-		countEvent:      make(chan uint64, 1),
-		getCounterEvent: make(chan chan uint64),
-		resetEvent:      make(chan struct{}),
+		data:          0,
+		additionEvent: make(chan uint64, 1),
+		getEvent:      make(chan chan uint64),
+		resetEvent:    make(chan struct{}),
 	}
 
 	go h.handle()
@@ -64,41 +79,46 @@ func newEventHandler() *eventHandler {
 	return h
 }
 
+// the event handler instance
 var handler = newEventHandler()
 
+// the event handler implementation: use select and channels to implement locking
+// because only one event is handled in a given time.
 func (h *eventHandler) handle() {
 	for {
 		select {
-		case addition := <-h.countEvent:
-			h.counter += addition
-		case ch := <-h.getCounterEvent:
-			ch <- h.counter
+		case addition := <-h.additionEvent:
+			h.data += addition
+		case ch := <-h.getEvent:
+			ch <- h.data
 		case <-h.resetEvent:
-			h.counter = 0
+			h.data = 0
 		}
 
 	}
 }
 
-// counterEvent wrapper
-func (h *eventHandler) triggerCounterEvent(addition uint64) {
-	h.countEvent <- addition
+// additionEvent wrapper
+func (h *eventHandler) addToData(addition uint64) {
+	h.additionEvent <- addition
 }
 
-// getCounterEvent wrapper
-func (h eventHandler) getCounter() uint64 {
+// getEvent wrapper. Use a callback channel to return the response.
+func (h eventHandler) getData() uint64 {
 	callback := make(chan uint64)
 	defer close(callback)
 
-	h.getCounterEvent <- callback
+	h.getEvent <- callback
 	res := <-callback
 	return res
 }
 
+// reset counter wrapper
 func (h *eventHandler) reset() {
 	h.resetEvent <- struct{}{}
 }
 
+// main: run the server on port 8080
 func main() {
 	http.Handle("/", handler)
 	if err := http.ListenAndServe(":8080", nil); err != nil {
