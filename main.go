@@ -8,10 +8,10 @@ import (
 )
 
 type eventHandler struct {
-    counter         uint64
-    countEvent      chan uint64
-    getCounterEvent chan chan uint64
-    resetEvent      chan struct{}
+	counter         uint64
+	countEvent      chan uint64
+	getCounterEvent chan chan uint64
+	resetEvent      chan struct{}
 }
 
 func (h *eventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -34,9 +34,9 @@ func (h *eventHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintf(w, "Added %d", addition)
 			}
 		}
-    } else if r.Method == http.MethodPost && r.URL.Path == "/reset" {
-        h.reset()
-        w.WriteHeader(http.StatusNoContent)
+	} else if r.Method == http.MethodPost && r.URL.Path == "/reset" {
+		h.reset()
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 
@@ -62,8 +62,8 @@ func (h *eventHandler) handle() {
 			h.counter += addition
 		case ch := <-h.getCounterEvent:
 			ch <- h.counter
-		case <- h.resetEvent:
-		    h.counter = 0
+		case <-h.resetEvent:
+			h.counter = 0
 		}
 
 	}
@@ -85,7 +85,7 @@ func (h eventHandler) getCounter() uint64 {
 }
 
 func (h *eventHandler) reset() {
-    h.resetEvent <- struct {}{}
+	h.resetEvent <- struct{}{}
 }
 
 func main() {
