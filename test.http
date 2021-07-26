@@ -1,0 +1,136 @@
+###
+POST localhost:8080/reset
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 204, "Response status is not 204");
+    });
+%}
+
+###
+
+GET localhost:8080
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === 'Counter: 0\n', "Response body is not 'Counter: 0' but '" + response.body + "'");
+    });
+%}
+
+###
+PUT localhost:8080
+Content-Type: text/plain
+
+5
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === 'Added 5', "Response body is not 'Added 5' but '" + response.body + "'");
+    });
+%}
+
+###
+PUT localhost:8080
+Content-Type: text/plain
+
+aaa
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+###
+PUT localhost:8080
+Content-Type: text/plain
+
+5aaa
+
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 400, "Response status is not 400");
+    });
+%}
+
+###
+PUT localhost:8080
+Content-Type: text/plain
+
+34
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === 'Added 34', "Response body is not 'Added 34' but '" + response.body + "'");
+    });
+%}
+
+###
+PUT localhost:8080
+Content-Type: text/plain
+
+1
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === 'Added 1', "Response body is not 'Added 1' but '" + response.body + "'");
+    });
+%}
+
+###
+
+GET localhost:8080
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === 'Counter: 40\n', "Response body is not 'Counter: 40' but '" + response.body + "'");
+    });
+%}
+
+###
+PUT localhost:8080
+Content-Type: text/plain
+
+10
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === 'Added 10', "Response body is not 'Added 10' but '" + response.body + "'");
+    });
+%}
+
+###
+GET localhost:8080
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === 'Counter: 50\n', "Response body is not 'Counter: 50' but '" + response.body + "'");
+    });
+%}
+
+###
+POST localhost:8080/reset
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 204, "Response status is not 204");
+    });
+%}
+
+###
+
+GET localhost:8080
+
+> {%
+    client.test("Request executed successfully", function() {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body === 'Counter: 0\n', "Response body is not 'Counter: 0' but '" + response.body + "'");
+    });
+%}
